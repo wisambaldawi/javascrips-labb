@@ -210,7 +210,7 @@ window.addEventListener("load", function () {
   label.setAttribute("for", "timeLimitCheckbox");
 
   //Skapa texten med textnode
-  let labelText = document.createTextNode(" Vill du begränsa tiden till 5 sekunder istället för 10 per drag?");
+  let labelText = document.createTextNode(" Vill du begränsa tiden till 5 sekunder per drag?");
   label.appendChild(labelText);
 
   //Stoppa in krysset och texten i wrappern
