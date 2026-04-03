@@ -3,7 +3,7 @@
 let oGameData = {};
 
 oGameData.checkForGameOver = function () {
-//en array som fungerar som en behållare för alla vinst kombinatiner 
+  //en array som fungerar som en behållare för alla vinst kombinatiner
   let winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -25,7 +25,7 @@ oGameData.checkForGameOver = function () {
       oGameData.gameField[a] === oGameData.gameField[b] && //cell a har samma värde som cell b och
       oGameData.gameField[b] === oGameData.gameField[c] //cell b har samma värde som cell c
     ) {
-    //om det var spelare 1 som va på cell a return 1 (vinnare), annars return 2 spelare 2
+      //om det var spelare 1 som va på cell a return 1 (vinnare), annars return 2 spelare 2
       if (oGameData.gameField[a] === oGameData.playerOne) {
         return 1;
       } else {
@@ -83,6 +83,7 @@ oGameData.initGlobalObject = function () {
   //Timerid om användaren har klickat för checkboxen.
   oGameData.timerId = null;
 };
+
 // skapar en funktion för validering
 function validateForm() {
   //hämtar värderna för namn och färg som användaren har skrivit in
@@ -178,6 +179,13 @@ function initiateGame() {
     "Akuell spelare är: " + playerName;
 
   document.querySelector("table").addEventListener("click", executeMove);
+  //kontrollerar ifall kryssrutan är i kryssad eller inte
+  if (document.getElementById("timeLimitCheckbox").checked) {
+    oGameData.timerEnabled = true;
+    startTimer(); //ropar på denna funktion om den är i kryssad
+  } else {
+    oGameData.timerEnabled = false;
+  }
 }
 
 //lyssnar på när hela sidan har laddat klart
@@ -196,7 +204,7 @@ window.addEventListener("load", function () {
   let divWithA = document.getElementById("div-with-a");
   let startBtn = document.getElementById("newGame");
 
-  //Skapar en wrapper-div som jag kan styla i css 
+  //Skapar en wrapper-div som jag kan styla i css
   let wrapperDiv = document.createElement("div");
   wrapperDiv.setAttribute("class", "timer-checkbox-container");
 
@@ -210,7 +218,9 @@ window.addEventListener("load", function () {
   label.setAttribute("for", "timeLimitCheckbox");
 
   //Skapa texten med textnode
-  let labelText = document.createTextNode(" Vill du begränsa tiden till 5 sekunder per drag?");
+  let labelText = document.createTextNode(
+    " Vill du begränsa tiden till 5 sekunder per drag?",
+  );
   label.appendChild(labelText);
 
   //Stoppa in krysset och texten i wrappern
@@ -229,6 +239,10 @@ function executeMove(event) {
 
     //Kontrollera så att cellen är tom i gameField
     if (oGameData.gameField[cellId] === "") {
+      //stoppa timern ifall den är igång eftersom ett drag har gjorts
+      if (oGameData.timerEnabled) {
+        clearTimeout(oGameData.timerId);
+      }
       //Uppdatera gameField med aktuella spelares tecken
       oGameData.gameField[cellId] = oGameData.currentPlayer;
 
@@ -260,6 +274,10 @@ function executeMove(event) {
 
       //Om spelet är slut returnerar 1, 2 eller 3
       if (gameResult === 1 || gameResult === 2 || gameResult === 3) {
+        //stoppa timern
+        if (oGameData.timerEnabled) {
+          clearTimeout(oGameData.timerId);
+        }
         //Ta bort lyssnaren på tabellen
         document
           .querySelector("table")
@@ -277,6 +295,7 @@ function executeMove(event) {
         } else if (gameResult === 3) {
           message = "Det är oavgjort! Spela igen?";
         }
+
         document.querySelector(".jumbotron h1").textContent = message;
 
         //Lägg till klassen d-none på elementet med id=game-area
@@ -284,7 +303,29 @@ function executeMove(event) {
 
         //Anropa funktionen initGlobalObject i oGameData
         oGameData.initGlobalObject();
+      } else {
+        if (oGameData.timerEnabled) {
+          startTimer();
+        }
       }
     }
   }
+}
+//skapar funktionen för att starta timer
+function startTimer() {
+  //starta en ny timer som körs efter 5 sekunder
+  oGameData.timerId = setTimeout(function () {
+    //om nuvarande spelare är spelare 1 så ska vi byta till spelare 2
+    if (oGameData.currentPlayer === playerOne) {
+      oGameData.currentPlayer = playerTwo;
+      //uppdatera spelare i jumbotron h1
+      document.querySelector(".jumbotron h1").textContent =
+        "Aktuella spelare är " + oGameData.nickNamePlayerTwo;
+    } else {
+      oGameData.currentPlayer = oGameData.playerOne;
+      document.querySelector(".jumbotron h1").textContent =
+        "Aktuella spelare är " + oGameData.nickNamePlayerOne;
+    }
+    startTimer();
+  }, 5000); //tid på timer 5 sekunder
 }
