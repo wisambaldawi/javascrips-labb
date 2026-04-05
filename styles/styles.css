@@ -87,7 +87,7 @@ td{
 
 
 #div-with-a{
-	margin: 32px 0;
+	margin: 12px 0;
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
@@ -113,18 +113,14 @@ td{
 	display: none !important;
 }
 
-.timer-checkbox-container {
+#timer-wrapper {
     display: flex;
     align-items: center;
+    gap: 10px;  
 }
 
-.timer-checkbox-container input[type="checkbox"] {
-    width: auto; 
-    height: auto;
-    margin-right: 8px; 
-}
-
-.timer-checkbox-container label {
+#timer-wrapper input,
+#timer-wrapper label {
     width: auto; 
     height: auto;
 }
